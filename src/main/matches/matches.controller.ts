@@ -7,6 +7,11 @@ export class MatchesController {
 
 	@Get('/live')
 	async getLiveMatch() {
-		return this.liveService.getLiveMatches();
+		return this.liveService.getMatches('LIVE');
+	}
+
+	@Get('/highlights')
+	async getHighLights() {
+		return this.liveService.getMatches('HIGHLIGHTS');
 	}
 }

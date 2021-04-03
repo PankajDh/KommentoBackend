@@ -8,7 +8,7 @@ const ormConfig = require('../../../../ormconfig.json');
 export class LiveService {
 	// constructor() {}
 
-	async getLiveMatches() {
+	async getMatches(type:string) {
 		let pool;
 		try {
 			const { user, password, host, database } = ormConfig;
@@ -19,7 +19,7 @@ export class LiveService {
 				database,
 			});
 			const queryResult = await pool.query(
-				`select * from matches where type = 'LIVE'`,
+				`select * from matches where type = $1`,[type],
 			);
 			await pool.end();
 			return Helper.convertToCamelCaseObject(queryResult.rows);
