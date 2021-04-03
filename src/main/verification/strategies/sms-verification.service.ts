@@ -5,7 +5,8 @@ import { VerificationInstance } from 'twilio/lib/rest/verify/v2/service/verifica
 import { SendVerificationSmsDto } from '../dto/send-verification-sms.dto';
 import { VerifySmsDto } from '../dto/verify-sms.dto';
 const accountSid = 'AC85724283550ad2fc89d664c0a48b400d';
-const authToken = 'b4313848778f4ce1d4b1c3031a56870b';
+// const authToken = 'b4313848778f4ce1d4b1c3031a56870b';
+const authToken = 'a249612ec91629034ac5a43079649a2f';
 const serviceSid = 'VAe2ca4e0878d585310c6e86569527bdb8';
 
 @Injectable()
@@ -17,13 +18,18 @@ export class SmsVerificationService {
 	): Promise<VerificationInstance> {
 		const { phoneNumber, countryCode } = params;
 		const client = twilio(accountSid, authToken);
+		let response;
+		try {
+			 response = await client.verify
+				.services(serviceSid)
+				.verifications.create({
+					to: `${countryCode}${phoneNumber}`,
+					channel: 'sms',
+				});
 
-		const response = await client.verify
-			.services(serviceSid)
-			.verifications.create({
-				to: `${countryCode}${phoneNumber}`,
-				channel: 'sms',
-			});
+		} catch(err){
+			console.log(err);
+		}
 
 		return response;
 	}
