@@ -31,8 +31,8 @@ export class UsersService {
 			let userDetails;
 			if (queryResult?.rows[0]) {
 				const updateResults = await pool.query(
-					`update users set last_login = $1 returning *`,
-					[new Date()],
+					`update users set last_login = $1 where id = $2 returning *`,
+					[new Date(), queryResult.rows[0].id],
 				);
 				userDetails = updateResults?.rows[0];
 			} else {
