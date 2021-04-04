@@ -195,7 +195,7 @@ export class UsersService {
 			
 			let newUserDetails;
 			if (userDetails) {
-				const updateResults = await pool.query(`update users set passcode=$1, last_login=$2 where id = $3 returning *`,[code, new Date(), userDetails.id]);
+				const updateResults = await pool.query(`update users set passcode=$1, last_login=$2 where id = $3 returning *`,[hashedCode, new Date(), userDetails.id]);
 				newUserDetails = updateResults.rows[0];
 			} else {
 				const insertResults = await pool.query(`insert into users(phone_number, passcode, last_login) values($1, $2, $3) returning *`, [phoneNumber, hashedCode, new Date()]);
