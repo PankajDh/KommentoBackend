@@ -30,4 +30,27 @@ export class LiveService {
 			throw err;
 		}
 	}
+
+	async getFeaturedMatches() {
+		let pool;
+		try {
+			const { user, password, host, database } = ormConfig;
+			pool = new pg.Pool({
+				user,
+				password,
+				host,
+				database,
+			});
+			const queryResult = await pool.query(
+				`select * from matches where is_featured`,
+			);
+			await pool.end();
+			return Helper.convertToCamelCaseObject(queryResult.rows);
+		} catch (err) {
+			if (pool && !pool.ended) {
+				await pool.end();
+			}
+			throw err;
+		}
+	}
 }

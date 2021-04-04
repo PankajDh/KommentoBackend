@@ -14,4 +14,9 @@ export class MatchesController {
 	async getHighLights() {
 		return this.liveService.getMatches('HIGHLIGHTS');
 	}
+	
+	@Get('/featured')
+	async getFeaturedMatches() {
+		return this.liveService.getFeaturedMatches();
+	}
 }
