@@ -5,6 +5,11 @@ import { ApplyForCommentaryDto } from '../dto/applyForCommentary.dto';
 import { UserJoinedDto } from '../dto/userJoined.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ormConfig = require('../../../../ormconfig.json');
+import * as bcrypt from 'bcryptjs';
+import { UserLoginDto } from '../dto/userlogin.dto';
+import { LoginResponseDto } from '../dto/loginResponse.dto';
+import { UserSignupDto } from '../dto/userSignup.dto';
+import { PoliciesList } from 'twilio/lib/rest/trusthub/v1/policies';
 
 @Injectable()
 export class UsersService {
@@ -117,6 +122,86 @@ export class UsersService {
 			}
 			await pool.end();
 		} catch (err) {
+			if (pool && !pool.ended) {
+				await pool.end();
+			}
+			throw err;
+		}
+	}
+
+	async login(params:UserLoginDto):Promise<LoginResponseDto> {
+		const {phoneNumber, code} = params;
+		let pool;
+		try {
+			const { user, password, host, database } = ormConfig;
+			pool = new pg.Pool({
+				user,
+				password,
+				host,
+				database
+			});
+			const selectResult = await pool.query(
+				`select * from users where phone_number=$1`,
+				[phoneNumber],
+			);
+			await pool.end();
+			
+			const userDetails = selectResult.rows[0];
+			if (!userDetails) {
+				return {
+					newUser :true
+				};
+			}
+
+			const passcodeCompare =  await bcrypt.compare(code, userDetails.passcode);
+			if (passcodeCompare) {
+				const {id, is_commentator} = userDetails;
+				return {
+					userId: id,
+					isCommentator: is_commentator,
+					verified:true,
+					newUser:false
+				}	
+			}
+			return {
+				verified:false,
+				newUser: false
+			};
+		} catch(err) {
+			if (pool && !pool.ended) {
+				await pool.end();
+			}
+			throw err;
+		}	
+	}
+
+	async signup(params:UserSignupDto) : Promise<{userId:string; isCommentator:boolean}>{
+		let pool;
+		try {
+			const {phoneNumber, code} = params;
+			const { user, password, host, database } = ormConfig;
+			pool = new pg.Pool({
+				user,
+				password,
+				host,
+				database
+			});
+			const selectResult = await pool.query(
+				`select * from users where phone_number=$1`,
+				[phoneNumber],
+			);
+			if (selectResult.rows[0]) {
+				throw new Error('This phone number is already registered, please login using your pin');
+			}
+			const hashedCode =  await bcrypt.hash(code, 10);
+			const insertResults = await pool.query(`insert into users(phone_number, passcode, last_login) values($1, $2, $3) returning *`, [phoneNumber, hashedCode, new Date()]);
+			const newUserDetails = insertResults.rows[0];
+			return {
+				userId: newUserDetails.id,
+				isCommentator: newUserDetails.is_commentator
+			}
+
+		} catch(err) {
 			if (pool && !pool.ended) {
 				await pool.end();
 			}
