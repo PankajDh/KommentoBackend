@@ -190,12 +190,17 @@ export class UsersService {
 				`select * from users where phone_number=$1`,
 				[phoneNumber],
 			);
-			if (selectResult.rows[0]) {
-				throw new Error('This phone number is already registered, please login using your pin');
-			}
+			const userDetails =  selectResult.rows[0];
 			const hashedCode =  await bcrypt.hash(code, 10);
-			const insertResults = await pool.query(`insert into users(phone_number, passcode, last_login) values($1, $2, $3) returning *`, [phoneNumber, hashedCode, new Date()]);
-			const newUserDetails = insertResults.rows[0];
+			
+			let newUserDetails;
+			if (userDetails) {
+				const updateResults = await pool.query(`update users set passcode=$1, last_login=$2 where id = $3 returning *`,[code, new Date(), userDetails.id]);
+				newUserDetails = updateResults.rows[0];
+			} else {
+				const insertResults = await pool.query(`insert into users(phone_number, passcode, last_login) values($1, $2, $3) returning *`, [phoneNumber, hashedCode, new Date()]);
+				newUserDetails = insertResults.rows[0];
+			}
 			return {
 				userId: newUserDetails.id,
 				isCommentator: newUserDetails.is_commentator
