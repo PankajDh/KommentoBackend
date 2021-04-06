@@ -142,7 +142,7 @@ export class UsersService {
 			});
 			const selectResult = await pool.query(
 				`select * from users where phone_number=$1`,
-				[phoneNumber],
+				[phoneNumber.trim()],
 			);
 			await pool.end();
 			
@@ -188,7 +188,7 @@ export class UsersService {
 			});
 			const selectResult = await pool.query(
 				`select * from users where phone_number=$1`,
-				[phoneNumber],
+				[phoneNumber.trim()],
 			);
 			const userDetails =  selectResult.rows[0];
 			const hashedCode =  await bcrypt.hash(code, 10);
