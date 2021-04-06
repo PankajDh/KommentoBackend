@@ -53,4 +53,27 @@ export class LiveService {
 			throw err;
 		}
 	}
+
+	async getMatchById(id:string) {
+		let pool;
+		try {
+			const { user, password, host, database } = ormConfig;
+			pool = new pg.Pool({
+				user,
+				password,
+				host,
+				database,
+			});
+			const queryResult = await pool.query(
+				`select * from matches where id =$1`,[id]
+			);
+			await pool.end();
+			return Helper.convertToCamelCaseObject(queryResult.rows);
+		} catch(err) {
+			if (pool && !pool.ended) {
+				await pool.end();
+			}
+			throw err;
+		}
+	}
 }
