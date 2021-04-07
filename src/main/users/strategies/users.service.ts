@@ -77,7 +77,7 @@ export class UsersService {
 	}
 
 	async userJoinedMatch(params: UserJoinedDto): Promise<void> {
-		const { matchId, userId, currentState } = params;
+		const { commentaryId, userId, currentState } = params;
 		let pool;
 		try {
 			const { user, password, host, database } = ormConfig;
@@ -88,8 +88,8 @@ export class UsersService {
 				database,
 			});
 			const selectResult = await pool.query(
-				`select * from user_match_relation where user_id=$1 and match_id=$2`,
-				[userId, matchId],
+				`select * from user_match_relation where user_id=$1 and commentary_id=$2`,
+				[userId, commentaryId],
 			);
 
 			const userMatchRelation = selectResult.rows[0];
@@ -111,10 +111,10 @@ export class UsersService {
 				);
 			} else {
 				await pool.query(
-					`insert into user_match_relation(user_id,match_id,current_state,join_details) values($1,$2,$3,$4)`,
+					`insert into user_match_relation(user_id,commentary_id,current_state,join_details) values($1,$2,$3,$4)`,
 					[
 						userId,
-						matchId,
+						commentaryId,
 						currentState,
 						JSON.stringify([newJoinDetails]),
 					],

@@ -5,7 +5,7 @@ export class UserJoinedDto {
 	userId: string;
 
 	@IsString()
-	matchId: string;
+	commentaryId: string;
 
 	@IsString()
 	currentState: string;

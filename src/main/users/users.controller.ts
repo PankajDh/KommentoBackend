@@ -15,7 +15,7 @@ export class UsersController {
 		return this.usersService.startKyc(params);
 	}
 
-	@Patch('/join/match')
+	@Patch('/join/commentary')
 	async userJoinedMatch(@Body() params: UserJoinedDto): Promise<void> {
 		return this.usersService.userJoinedMatch(params);
 	}
