@@ -6,4 +6,7 @@ export class AutomaticScoreUpdateDto{
 
    @IsString()
    seriesId:string;
+
+   @IsString()
+   apiCallDate:string;
 }

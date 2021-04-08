@@ -9,9 +9,27 @@ const ormConfig = require('../../../../ormconfig.json');
 export class ScoreService{
     constructor( readonly networkService:NetworkService) {}
    
-    async saveScore(rapidApiMatchId:string, rapidApiSeriesId:string, kommetoMatchId?:string):Promise<void> {
+    async saveScore(rapidApiMatchId:string, rapidApiSeriesId:string, kommetoMatchId:string, apiCallDate:string):Promise<void> {
         let pool;
         try {
+            const { user, password, host, database } = ormConfig;
+			pool = new pg.Pool({
+				user,
+				password,
+				host,
+				database,
+			});
+
+            const countQueryResult = await pool.query(`select * from score_api_calls where date=$1`,[apiCallDate]);
+            await pool.end();
+            pool = null;
+
+            const count  = countQueryResult.rows[0].calls;
+            if (count > 2500) {
+                console.log(`calls done for ${apiCallDate} is ${count}`);
+                return;
+            }
+
             const url = `https://dev132-cricket-live-scores-v1.p.rapidapi.com/scorecards.php`;
             const response = await this.networkService.get(url, {
                 matchid: rapidApiMatchId,
@@ -30,13 +48,15 @@ export class ScoreService{
                 teamTwoWickets: parseInt(response.fullScorecard.innings[1].wicket),
             }
 
-            const { user, password, host, database } = ormConfig;
 			pool = new pg.Pool({
 				user,
 				password,
 				host,
 				database,
 			});
+            
+            await pool.query('update score_api_calls set calls=$1 where date=$2',[count+1, apiCallDate]);
+
 			await pool.query(
 				`update matches set 
                     team_one_runs=$1, 

@@ -31,7 +31,7 @@ export class MatchesController {
 
 	@Patch('/automatic/:id')
 	async saveScore(@Param() params: GetByMatchDto, @Body() body:AutomaticScoreUpdateDto): Promise<any> {
-		return this.scoreService.saveScore(body.matchId, body.seriesId, params.id);
+		return this.scoreService.saveScore(body.matchId, body.seriesId, params.id, body.apiCallDate);
 	}
 
 	@Patch('/manual/:id')
