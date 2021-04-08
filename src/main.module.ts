@@ -4,6 +4,7 @@ import { MiddlewareConsumer, NestModule, Module } from '@nestjs/common';
 import { AppAuthModule } from './main/app-auth/app-auth.module';
 import { CommentriesModule } from './main/commentries/commentries.module';
 import { MatchesModule } from './main/matches/matches.module';
+import { NetworkModule } from './main/network/network.module';
 import { RootController } from './main/root/root.controller';
 import { UsersModule } from './main/users/users.module';
 import { VerificationModule } from './main/verification/verification.module';
@@ -15,6 +16,7 @@ import { VerificationModule } from './main/verification/verification.module';
 		MatchesModule,
 		UsersModule,
 		CommentriesModule,
+		NetworkModule
 	],
 	controllers: [RootController],
 })
