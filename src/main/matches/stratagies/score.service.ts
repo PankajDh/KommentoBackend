@@ -43,9 +43,9 @@ export class ScoreService{
                 teamOneRuns : parseInt(response.fullScorecard.innings[0].run),
                 teamOneOvers: parseFloat(response.fullScorecard.innings[0].over),
                 teamOneWickets: parseInt(response.fullScorecard.innings[0].wicket),
-                teamTwoRuns : parseInt(response.fullScorecard.innings[1].run),
-                teamTwoOvers: parseFloat(response.fullScorecard.innings[1].over),
-                teamTwoWickets: parseInt(response.fullScorecard.innings[1].wicket),
+                teamTwoRuns : response.fullScorecard.innings.length > 1 ? parseInt(response.fullScorecard.innings[1].run) : 0,
+                teamTwoOvers: response.fullScorecard.innings.length > 1 ? parseFloat(response.fullScorecard.innings[1].over) : 0.0,
+                teamTwoWickets: response.fullScorecard.innings.length > 1  ? parseInt(response.fullScorecard.innings[1].wicket) : 0,
             }
 
 			pool = new pg.Pool({
