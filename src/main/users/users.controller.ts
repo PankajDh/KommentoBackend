@@ -15,7 +15,7 @@ export class UsersController {
 		return this.usersService.getUserById(params.id);
 	}
 	
-	@Patch(':id')
+	@Patch('/login/automatic/:id')
 	async automaticLogin(@Param() params:{id:string}){
 		return this.usersService.addAutomaticLogin(params.id);
 	}
