@@ -156,6 +156,7 @@ export class UsersService {
 			const passcodeCompare =  await bcrypt.compare(code, userDetails.passcode);
 			if (passcodeCompare) {
 				const {id, is_commentator} = userDetails;
+				await this.addLoginDetails(userDetails.phone_number);
 				return {
 					userId: id,
 					isCommentator: is_commentator,
@@ -209,6 +210,59 @@ export class UsersService {
 		} catch(err) {
 			if (pool && !pool.ended) {
 				await pool.end();
+			}
+			throw err;
+		}
+	}
+
+	async getUserById(id:string){
+		let pool;
+		try{
+			const { user, password, host, database } = ormConfig;
+			pool = new pg.Pool({
+				user,
+				password,
+				host,
+				database,
+			});
+			const queryResult = await pool.query(
+				`select * from users where id=$1`,
+				[id]
+			);
+			await pool.end();
+			const userDetails = queryResult.rows[0];
+			return {
+				userId: userDetails.id,
+				isCommentator: userDetails.is_commentator,
+				forceLogin: userDetails.force_login
+			};
+ 		} catch(err) {
+			if(pool && !pool.ended){
+			await pool.end();
+			}
+			throw err;
+		}
+	}
+
+	async addAutomaticLogin(id:string):Promise<void>{
+		let pool;
+		try{
+			const { user, password, host, database } = ormConfig;
+			pool = new pg.Pool({
+				user,
+				password,
+				host,
+				database,
+			});
+			const queryResult = await pool.query(
+				`select * from users where id=$1`,
+				[id]
+			);
+			await pool.end();
+			await this.addLoginDetails(queryResult.rows[0].phone_number);
+ 		} catch(err) {
+			if(pool && !pool.ended){
+			await pool.end();
 			}
 			throw err;
 		}

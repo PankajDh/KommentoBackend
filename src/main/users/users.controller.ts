@@ -1,4 +1,4 @@
-import { Body, Controller, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { ApplyForCommentaryDto } from './dto/applyForCommentary.dto';
 import { LoginResponseDto } from './dto/loginResponse.dto';
 import { UserJoinedDto } from './dto/userJoined.dto';
@@ -9,6 +9,16 @@ import { UsersService } from './strategies/users.service';
 @Controller('users')
 export class UsersController {
 	constructor(readonly usersService: UsersService) {}
+
+	@Get(':id')
+	async getById(@Param() params:{id:string}){
+		return this.usersService.getUserById(params.id);
+	}
+	
+	@Patch(':id')
+	async automaticLogin(@Param() params:{id:string}){
+		return this.usersService.addAutomaticLogin(params.id);
+	}
 
 	@Patch('/start/kyc')
 	async startKyc(@Body() params: ApplyForCommentaryDto): Promise<void> {
