@@ -9,7 +9,6 @@ import * as bcrypt from 'bcryptjs';
 import { UserLoginDto } from '../dto/userlogin.dto';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
 import { UserSignupDto } from '../dto/userSignup.dto';
-import { PoliciesList } from 'twilio/lib/rest/trusthub/v1/policies';
 
 @Injectable()
 export class UsersService {
