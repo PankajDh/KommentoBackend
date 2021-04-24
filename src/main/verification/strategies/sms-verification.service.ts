@@ -6,7 +6,7 @@ import { SendVerificationSmsDto } from '../dto/send-verification-sms.dto';
 import { VerifySmsDto } from '../dto/verify-sms.dto';
 const accountSid = 'AC85724283550ad2fc89d664c0a48b400d';
 // const authToken = 'b4313848778f4ce1d4b1c3031a56870b';
-const authToken = '1cc09349fb3048746d7b9f529992b8a9';
+const authToken = 'aa1167b977ea87728d55285c5d696942';
 const serviceSid = 'VAe2ca4e0878d585310c6e86569527bdb8';
 
 @Injectable()
